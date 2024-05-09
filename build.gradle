@@ -1,0 +1,82 @@
+plugins {
+    id 'java'
+    id 'war'
+}
+
+group 'org.zerock'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    junitVersion = '5.9.2'
+}
+
+sourceCompatibility = '11'
+targetCompatibility = '11'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+dependencies {
+    compileOnly('javax.servlet:javax.servlet-api:4.0.1')
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
+
+    // https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client
+    implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '3.3.3'
+
+    // https://mvnrepository.com/artifact/org.projectlombok/lombok
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
+    testCompileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
+    testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
+
+/*
+ 일반적으로 Lombok은 compileOnly와 annotationProcessor로 설정되어야 하는데, 그 이유는 Lombok이 컴파일 시에만 필요하고 런타임에는 필요하지 않기 때문이다.
+
+implementation 스코프
+의미: implementation 스코프로 선언된 의존성은 프로젝트를 컴파일하는 데 사용되며, 런타임에도 포함된다.
+       그러나 이 스코프로 선언된 의존성은 프로젝트가 다른 모듈에 의해 의존되었을 때, 그 의존성이 노출되지 않는다.
+       즉, 다른 모듈이 이 모듈을 사용할 때, implementation으로 선언된 의존성은 그 모듈에 전파되지 않는다.
+장점: 이는 API를 철저히 숨기고 싶을 때 유용하다. 다른 모듈이 의존하는 라이브러리의 내부 구현을 알 필요가 없으며, 라이브러리의 변경이 다른 모듈에 영향을 미치는 것을 방지한다.
+
+compileOnly 스코프: 컴파일 시에만 작동하고 런타임에는 포함되지 않음.
+즉, compileOnly 스코프로 선언하면, 최종적으로 생성되는 jar나 war의 런타임 클래스에 lombok 라이브러리가 포함되지 않는다.
+Lombok은 실제로 런타임에는 필요 없으며, 컴파일 시점에 소스 코드를 조작하는 용도로만 사용됨. 런타임에 롬복 라이브러리를 포함시키는 것은 불필요한 자원 낭비임.
+
+annotationProcessor 스코프 : annotationProcessor 스코프는 어노테이션을 처리하는 도구를 위해 사용된다. 컴파일 시점에 어노테이션을 분석하고 코드를 생성하는 도구에 사용된다.
+장점: 이 스코프를 사용함으로써 어노테이션 프로세서가 컴파일 단계에서만 작동하도록 제한할 수 있으며, 런타임 성능에 영향을 주지 않는다.
+*/
+
+    // HikariCP : Connection 생성 위한 커넥션 풀.
+    // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
+    implementation group: 'com.zaxxer', name: 'HikariCP', version: '5.1.0'
+
+    //ModelMapper : getter/setter 등을 이용해서 객체의 정보를 다른 객체로 복사하는 기능.
+// https://mvnrepository.com/artifact/org.modelmapper/modelmapper
+    implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.2.0'
+
+
+    //log4j
+    // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.23.1'
+    // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.23.1'
+    // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl
+    testImplementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.23.1'
+
+    //jstl
+// https://mvnrepository.com/artifact/javax.servlet/jstl
+    implementation group: 'javax.servlet', name: 'jstl', version: '1.2'
+
+
+}
+
+test {
+    useJUnitPlatform()
+}
