@@ -34,19 +34,20 @@ public class TodoReadController extends HttpServlet {
             // 쿠키 찾기
             Cookie viewTodoCookie = findCookie(req.getCookies(), "viewTodos");
             String todoListStr = viewTodoCookie.getValue();
-            boolean exist = false;
+            boolean exist = false; // 지금 보는 tno가 쿠키에 값으로 이미 들어 있으면, 즉 이전에 본 적이 있으면 true, 아니면 false.
 
             if (todoListStr != null && todoListStr.indexOf(tno + "-") >= 0) {
                 exist = true;
             }
             log.info("exist : " + exist);
 
+            // 처음 보는 tno면 쿠키에 해당 tno 값 추가하고, 유효시간 다시 설정해서 쿠키 만료시간 갱신.
             if (!exist) {
                 todoListStr += tno + "-";
                 viewTodoCookie.setValue(todoListStr);
-                viewTodoCookie.setMaxAge(60 * 60 * 24);
+                viewTodoCookie.setMaxAge(60 * 60 * 24); // 쿠키 변경할 때는 유효시간과 경로 다시 세팅해야함.
                 viewTodoCookie.setPath("/");
-                resp.addCookie(viewTodoCookie);
+                resp.addCookie(viewTodoCookie); // 기존에 같은 이름의 쿠키가 있으면, 지금 만든 새로운 쿠키로 교체됨.
             }
 
             req.getRequestDispatcher("/WEB-INF/todo/read.jsp").forward(req, resp);
